@@ -1990,6 +1990,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['auth'],
   mounted: function mounted() {
@@ -2006,6 +2007,7 @@ __webpack_require__.r(__webpack_exports__);
       user: {},
       lists: [],
       form: new Form({
+        id: '',
         list_title: '',
         list_notes: ''
       }),
@@ -2038,31 +2040,72 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$Progress.start();
       this.form.post('/api/save-list').then(function (response) {
-        // Close Modal
-        _this4.$refs.listModal.close(); // Reset Form
-
-
-        _this4.form.reset(); // Fire refresh event
-
-
-        Fire.$emit('refreshListAdded');
         Toast.fire({
           type: 'success',
           title: 'List added!'
-        });
-      })["catch"](function () {
-        _this4.$Progress.fail();
+        }); // Fire refresh event
+
+        Fire.$emit('refreshListAdded');
+
+        _this4.$Progress.finish(); // Close Modal
+
+
+        _this4.$refs.listModal.close(); // Reset Form
+
 
         _this4.form.reset();
+      })["catch"](function () {
+        Toast.fire({
+          type: 'error',
+          title: 'Ooops! Try again'
+        });
+
+        _this4.$Progress.fail();
+      });
+    },
+    editList: function editList(list) {
+      this.editmode = true;
+      this.form.clear();
+      this.$refs.listModal.open();
+      this.form.fill(list);
+    },
+    updateList: function updateList() {
+      var _this5 = this;
+
+      this.$Progress.start();
+      this.form.put('/api/update-list/' + this.form.id).then(function (response) {
+        _this5.$refs.listModal.close();
+
+        _this5.form.reset();
+
+        Fire.$emit('refreshListAdded');
+
+        _this5.$Progress.finish();
+
+        Toast.fire({
+          type: 'success',
+          title: 'List updated!'
+        });
+      })["catch"](function (error) {
+        _this5.form.reset();
 
         Toast.fire({
           type: 'error',
           title: 'Ooops! Try again'
         });
+
+        _this5.$Progress.fail();
       });
     },
-    editList: function editList(list) {},
-    deleteList: function deleteList(id) {}
+    deleteList: function deleteList(id) {
+      this.form["delete"]('/api/delete-list/' + id).then(function (response) {
+        Toast.fire({
+          type: 'success',
+          title: 'List deleted!'
+        });
+        Fire.$emit('refreshListAdded');
+      })["catch"](function () {});
+    }
   },
   computed: {
     // Check if any list added
@@ -43485,20 +43528,32 @@ var render = function() {
                                   "h6",
                                   { staticClass: "font-weight-bold blue mb-0" },
                                   [
+                                    _c("i", { staticClass: "fa fa-paperclip" }),
                                     _vm._v(
-                                      _vm._s(
-                                        _vm._f("capitalize")(list.list_title)
-                                      )
+                                      " " +
+                                        _vm._s(
+                                          _vm._f("capitalize")(list.list_title)
+                                        )
                                     )
                                   ]
                                 ),
                                 _vm._v(" "),
-                                _c("span", { staticClass: "link mb-4" }, [
-                                  _vm._v("Notes:" + _vm._s(list.list_notes))
-                                ]),
+                                list.list_notes
+                                  ? _c("span", { staticClass: "link mb-4" }, [
+                                      _c("i", {
+                                        staticClass: "fa fa-sticky-note-o"
+                                      }),
+                                      _vm._v(
+                                        " Notes: " + _vm._s(list.list_notes)
+                                      )
+                                    ])
+                                  : _vm._e(),
                                 _vm._v(" "),
                                 _c("h6", { staticClass: "added-by mt-1" }, [
-                                  _vm._v("Added by : " + _vm._s(list.user.name))
+                                  _c("i", { staticClass: "fa fa-user-o" }),
+                                  _vm._v(
+                                    " Added by : " + _vm._s(list.user.name)
+                                  )
                                 ])
                               ]),
                               _vm._v(" "),
@@ -43883,7 +43938,7 @@ var render = function() {
               on: {
                 submit: function($event) {
                   $event.preventDefault()
-                  return _vm.saveList($event)
+                  _vm.editmode ? _vm.updateList() : _vm.saveList()
                 }
               }
             },
@@ -43960,11 +44015,27 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _c(
-                "button",
-                { staticClass: "btn btn-secondary", attrs: { type: "submit" } },
-                [_vm._v("Save List")]
-              )
+              !_vm.editmode
+                ? _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary",
+                      attrs: { type: "submit" }
+                    },
+                    [_vm._v("Save List")]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.editmode
+                ? _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-success",
+                      attrs: { type: "submit" }
+                    },
+                    [_vm._v("Update List")]
+                  )
+                : _vm._e()
             ]
           )
         ],

@@ -11,6 +11,6 @@ class Lists extends Model
     public $with = ['user'];
 
     public function user() {
-        return $this->belongsTo('App\User', 'id');
+        return $this->belongsTo('App\User', 'added_by');
     }
 }

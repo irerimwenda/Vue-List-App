@@ -12,9 +12,9 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="col-md-10">
-                                            <h6 class="font-weight-bold blue mb-0">{{list.list_title | capitalize}}</h6>
-                                            <span class="link mb-4">Notes:{{list.list_notes}}</span>
-                                            <h6 class="added-by mt-1">Added by : {{list.user.name}}</h6>
+                                            <h6 class="font-weight-bold blue mb-0"><i class="fa fa-paperclip"></i> {{list.list_title | capitalize}}</h6>
+                                            <span v-if="list.list_notes" class="link mb-4"><i class="fa fa-sticky-note-o"></i> Notes: {{list.list_notes}}</span>
+                                            <h6 class="added-by mt-1"><i class="fa fa-user-o"></i> Added by : {{list.user.name}}</h6>
                                         </div>
 
                                         <div class="col-md-2 align-middle-custom" v-if="list.user.id === auth">
@@ -57,7 +57,7 @@
                     <h4 class="mt-4" v-if="!editmode">Add To-Do List</h4>
                     <h4 class="mt-4" v-if="editmode">Edit To-Do List</h4>
                 </template>
-            <form @submit.prevent="saveList">
+            <form @submit.prevent="editmode ? updateList() : saveList()">
                 <div class="form-group">
                 <label>List Title</label>
                 <input v-model="form.list_title" type="text" name="list_title"
@@ -73,7 +73,8 @@
                 <has-error :form="form" field="list_notes"></has-error>
                 </div>
 
-                <button type="submit" class="btn btn-secondary">Save List</button>
+                <button v-if="!editmode" type="submit" class="btn btn-secondary">Save List</button>
+                <button v-if="editmode" type="submit" class="btn btn-success">Update List</button>
             </form>
         </sweet-modal>
 
@@ -95,6 +96,7 @@
                 user: {},
                 lists: [],
                 form: new Form({
+                    id: '',
                     list_title: '',
                     list_notes: ''
                 }),
@@ -130,35 +132,72 @@
                 this.$Progress.start()
                 this.form.post('/api/save-list')
                     .then(response => {
+
+                        Toast.fire({
+                            type: 'success',
+                            title: 'List added!'
+                        })
+
+                        // Fire refresh event
+                        Fire.$emit('refreshListAdded');
+
+                         this.$Progress.finish()
+
                         // Close Modal
                         this.$refs.listModal.close()
 
                         // Reset Form
                         this.form.reset()
 
-                        // Fire refresh event
-                        Fire.$emit('refreshListAdded');
-
-                        Toast.fire({
-                            type: 'success',
-                            title: 'List added!'
-                        })
                     })
                     .catch(() => {
-                        this.$Progress.fail()
-                        this.form.reset()
-
                         Toast.fire({
                             type: 'error',
                             title: 'Ooops! Try again'
                         })
+
+                        this.$Progress.fail()
                     })
             },
             editList(list) {
-
+                this.editmode = true
+                this.form.clear()
+                this.$refs.listModal.open()
+                this.form.fill(list)
+            },
+            updateList() {
+                this.$Progress.start()
+                this.form.put('/api/update-list/' + this.form.id)
+                    .then(response => {
+                            this.$refs.listModal.close()
+                            this.form.reset()
+                            Fire.$emit('refreshListAdded');
+                            this.$Progress.finish()
+                            Toast.fire({
+                                type: 'success',
+                                title: 'List updated!'
+                            })
+                        })
+                    .catch(error => {
+                        this.form.reset()
+                        Toast.fire({
+                            type: 'error',
+                            title: 'Ooops! Try again'
+                        })
+                        this.$Progress.fail()
+                    })
             },
             deleteList(id) {
-
+                this.form.delete('/api/delete-list/' + id)
+                .then(response => {
+                    Toast.fire({
+                        type: 'success',
+                        title: 'List deleted!'
+                    })
+                    Fire.$emit('refreshListAdded');
+                })
+                .catch(() => {
+                })
             }
         },
         computed: {

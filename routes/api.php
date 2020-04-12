@@ -20,3 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('all-lists', 'API\ListsController@getLists');
 Route::post('save-list', 'API\ListsController@saveList');
+Route::put('update-list/{id}', 'API\ListsController@updateList');
+Route::delete('delete-list/{id}', 'API\ListsController@deleteList');
