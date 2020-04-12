@@ -3,12 +3,40 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
+use App\User;
 use App\Lists;
 
 class ListsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    // Create User
+    public function createUser(Request $request) {
+
+        $this->validate($request, [
+            'name' => 'required', 'string', 'max:255',
+            'email' => 'required', 'string', 'email', 'max:255', 'unique:users',
+            'role' => 'required', 'string',
+            'password' => 'required', 'string', 'min:8',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response($user, 201);
+    }
+
+
     // Get all lists
     public function getLists() {
         $lists = Lists::all();
@@ -51,7 +79,7 @@ class ListsController extends Controller
         $updated = $list->update([
             'list_title' => $request->list_title,
             'list_notes' => $request->list_notes,
-            'added_by' => $user->id,
+            'updated_by' => $user->id,
         ]);
 
         return response()->json($updated, 201);
@@ -59,6 +87,10 @@ class ListsController extends Controller
 
     // Delete List
     public function deleteList($id) {
+        
+        // Authorize For Super Admin
+        $this->authorize('isSuperAdmin');
+
         $list = Lists::findOrFail($id);
         $deleted = $list->delete();
 

@@ -40,6 +40,27 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="user_role" class="col-md-4 col-form-label text-md-right">{{ __('Role') }}</label>
+
+                            <div class="col-md-6">
+                                <select class="form-control" id="role" required="" name="role">
+
+                                    <option selected disabled>Choose...</option>
+                                    <option selected value="SuperAdmin" {{ (old('role')=='SuperAdmin') ? "selected" : "" }}>SuperAdmin</option>
+                                    <option value="User1" {{ (old('role')=='User1') ? "selected" : "" }}>User 1</option>
+                                    <option value="User2" {{ (old('role')=='User2') ? "selected" : "" }}>User 2</option>
+
+                                </select>
+
+                                @error('role')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">

@@ -28,5 +28,18 @@ class AuthServiceProvider extends ServiceProvider
 
         //Passport
         Passport::routes();
+
+        //Gate
+        Gate::define('isSuperAdmin', function($user) {
+            return $user->role === 'SuperAdmin';
+        });
+
+        Gate::define('isUser1', function($user) {
+            return $user->role === 'User1';
+        });
+
+        Gate::define('isUser2', function($user) {
+            return $user->role === 'User2';
+        });
     }
 }

@@ -40,6 +40,9 @@ Vue.filter('capitalize', function (value) {
     return value.charAt(0).toUpperCase() + value.slice(1)
 })
 
+import Gate from "./Gate"
+Vue.prototype.$gate = new Gate(window.user);
+
 let Fire = new Vue();
 window.Fire = Fire;
 

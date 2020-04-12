@@ -18,6 +18,7 @@ class CreateListsTable extends Migration
             $table->string('list_title');
             $table->text('list_notes')->nullable();
             $table->integer('added_by');
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

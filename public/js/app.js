@@ -1991,6 +1991,56 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['auth'],
   mounted: function mounted() {
@@ -2011,6 +2061,12 @@ __webpack_require__.r(__webpack_exports__);
         list_title: '',
         list_notes: ''
       }),
+      userForm: new Form({
+        name: '',
+        email: '',
+        role: '',
+        password: ''
+      }),
       editmode: false
     };
   },
@@ -2022,11 +2078,42 @@ __webpack_require__.r(__webpack_exports__);
         _this2.user = response.data;
       })["catch"](function () {});
     },
-    getLists: function getLists() {
+    adduser: function adduser() {
+      this.userForm.reset();
+      this.$refs.userModal.open();
+      this.userForm.clear();
+    },
+    saveUser: function saveUser() {
       var _this3 = this;
 
+      this.$Progress.start();
+      this.userForm.post('/api/save-user').then(function (response) {
+        Toast.fire({
+          type: 'success',
+          title: 'User added!'
+        });
+
+        _this3.$Progress.finish(); // Close Modal
+
+
+        _this3.$refs.userModal.close(); // Reset Form
+
+
+        _this3.userForm.reset();
+      })["catch"](function () {
+        Toast.fire({
+          type: 'error',
+          title: 'Ooops! Try again'
+        });
+
+        _this3.$Progress.fail();
+      });
+    },
+    getLists: function getLists() {
+      var _this4 = this;
+
       axios.get('/api/all-lists').then(function (response) {
-        _this3.lists = response.data;
+        _this4.lists = response.data;
       })["catch"](function () {});
     },
     addListForm: function addListForm() {
@@ -2036,7 +2123,7 @@ __webpack_require__.r(__webpack_exports__);
       this.form.clear();
     },
     saveList: function saveList() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.$Progress.start();
       this.form.post('/api/save-list').then(function (response) {
@@ -2047,20 +2134,20 @@ __webpack_require__.r(__webpack_exports__);
 
         Fire.$emit('refreshListAdded');
 
-        _this4.$Progress.finish(); // Close Modal
+        _this5.$Progress.finish(); // Close Modal
 
 
-        _this4.$refs.listModal.close(); // Reset Form
+        _this5.$refs.listModal.close(); // Reset Form
 
 
-        _this4.form.reset();
+        _this5.form.reset();
       })["catch"](function () {
         Toast.fire({
           type: 'error',
           title: 'Ooops! Try again'
         });
 
-        _this4.$Progress.fail();
+        _this5.$Progress.fail();
       });
     },
     editList: function editList(list) {
@@ -2070,31 +2157,31 @@ __webpack_require__.r(__webpack_exports__);
       this.form.fill(list);
     },
     updateList: function updateList() {
-      var _this5 = this;
+      var _this6 = this;
 
       this.$Progress.start();
       this.form.put('/api/update-list/' + this.form.id).then(function (response) {
-        _this5.$refs.listModal.close();
+        _this6.$refs.listModal.close();
 
-        _this5.form.reset();
+        _this6.form.reset();
 
         Fire.$emit('refreshListAdded');
 
-        _this5.$Progress.finish();
+        _this6.$Progress.finish();
 
         Toast.fire({
           type: 'success',
           title: 'List updated!'
         });
       })["catch"](function (error) {
-        _this5.form.reset();
+        _this6.form.reset();
 
         Toast.fire({
           type: 'error',
           title: 'Ooops! Try again'
         });
 
-        _this5.$Progress.fail();
+        _this6.$Progress.fail();
       });
     },
     deleteList: function deleteList(id) {
@@ -43510,6 +43597,16 @@ var render = function() {
     { staticClass: "container" },
     [
       _c("div", { staticClass: "row justify-content-center" }, [
+        _vm.$gate.isSuperAdmin()
+          ? _c("div", { staticClass: "col-md-8 text-center mb-3" }, [
+              _c(
+                "button",
+                { staticClass: "btn btn-success", on: { click: _vm.adduser } },
+                [_vm._v("Add User")]
+              )
+            ])
+          : _vm._e(),
+        _vm._v(" "),
         _c("div", { staticClass: "col-md-8" }, [
           _c("div", { staticClass: "card" }, [
             _c("div", { staticClass: "card-header" }, [_vm._v("My Lists")]),
@@ -43549,7 +43646,7 @@ var render = function() {
                                     ])
                                   : _vm._e(),
                                 _vm._v(" "),
-                                _c("h6", { staticClass: "added-by mt-1" }, [
+                                _c("h6", { staticClass: "added-by mt-2" }, [
                                   _c("i", { staticClass: "fa fa-user-o" }),
                                   _vm._v(
                                     " Added by : " + _vm._s(list.user.name)
@@ -43557,15 +43654,12 @@ var render = function() {
                                 ])
                               ]),
                               _vm._v(" "),
-                              list.user.id === _vm.auth
-                                ? _c(
-                                    "div",
-                                    {
-                                      staticClass:
-                                        "col-md-2 align-middle-custom"
-                                    },
-                                    [
-                                      _c(
+                              _c(
+                                "div",
+                                { staticClass: "col-md-2 align-middle-custom" },
+                                [
+                                  _vm.$gate.isSuperAdminOrUser2()
+                                    ? _c(
                                         "a",
                                         {
                                           staticClass: "pointer",
@@ -43576,9 +43670,11 @@ var render = function() {
                                           }
                                         },
                                         [_vm._m(0, true)]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  _vm.$gate.isSuperAdmin()
+                                    ? _c(
                                         "a",
                                         {
                                           staticClass: "pointer",
@@ -43590,9 +43686,9 @@ var render = function() {
                                         },
                                         [_vm._m(1, true)]
                                       )
-                                    ]
-                                  )
-                                : _vm._e()
+                                    : _vm._e()
+                                ]
+                              )
                             ]),
                             _vm._v(" "),
                             _c("hr")
@@ -43917,6 +44013,210 @@ var render = function() {
           ])
         ])
       ]),
+      _vm._v(" "),
+      _c(
+        "sweet-modal",
+        { ref: "userModal", attrs: { "overlay-theme": "dark" } },
+        [
+          _c("template", { slot: "title" }, [
+            _c("h4", { staticClass: "mt-4" }, [_vm._v("Add User")])
+          ]),
+          _vm._v(" "),
+          _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.saveUser()
+                }
+              }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "form-group" },
+                [
+                  _c("label", [_vm._v("Name")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.userForm.name,
+                        expression: "userForm.name"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    class: { "is-invalid": _vm.form.errors.has("name") },
+                    attrs: { type: "text", name: "name", required: "" },
+                    domProps: { value: _vm.userForm.name },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.userForm, "name", $event.target.value)
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("has-error", {
+                    attrs: { form: _vm.userForm, field: "name" }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "form-group" },
+                [
+                  _c("label", [_vm._v("Email")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.userForm.email,
+                        expression: "userForm.email"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    class: { "is-invalid": _vm.form.errors.has("email") },
+                    attrs: { type: "email", name: "email", required: "" },
+                    domProps: { value: _vm.userForm.email },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.userForm, "email", $event.target.value)
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("has-error", {
+                    attrs: { form: _vm.userForm, field: "email" }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "form-group" },
+                [
+                  _c("label", [_vm._v("Role")]),
+                  _vm._v(" "),
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.userForm.role,
+                          expression: "userForm.role"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      class: { "is-invalid": _vm.form.errors.has("role") },
+                      attrs: { id: "role", required: "", name: "role" },
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.$set(
+                            _vm.userForm,
+                            "role",
+                            $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          )
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { selected: "", disabled: "" } }, [
+                        _vm._v("Choose...")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "SuperAdmin" } }, [
+                        _vm._v("SuperAdmin")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "User1" } }, [
+                        _vm._v("User 1")
+                      ]),
+                      _vm._v(" "),
+                      _c("option", { attrs: { value: "User2" } }, [
+                        _vm._v("User 2")
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("has-error", {
+                    attrs: { form: _vm.userForm, field: "role" }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "form-group" },
+                [
+                  _c("label", [_vm._v("Password")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.userForm.password,
+                        expression: "userForm.password"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    class: { "is-invalid": _vm.form.errors.has("password") },
+                    attrs: { type: "password", name: "password", required: "" },
+                    domProps: { value: _vm.userForm.password },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.userForm, "password", $event.target.value)
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("has-error", {
+                    attrs: { form: _vm.userForm, field: "password" }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "button",
+                { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+                [_vm._v("Save User")]
+              )
+            ]
+          )
+        ],
+        2
+      ),
       _vm._v(" "),
       _c(
         "sweet-modal",
@@ -56246,6 +56546,60 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./resources/js/Gate.js":
+/*!******************************!*\
+  !*** ./resources/js/Gate.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Gate; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Gate = /*#__PURE__*/function () {
+  function Gate(user) {
+    _classCallCheck(this, Gate);
+
+    this.user = user;
+  }
+
+  _createClass(Gate, [{
+    key: "isSuperAdmin",
+    value: function isSuperAdmin() {
+      return this.user.role === 'SuperAdmin';
+    }
+  }, {
+    key: "isUser1",
+    value: function isUser1() {
+      return this.user.role === 'User1';
+    }
+  }, {
+    key: "isUser2",
+    value: function isUser2() {
+      return this.user.role === 'User2';
+    }
+  }, {
+    key: "isSuperAdminOrUser2",
+    value: function isSuperAdminOrUser2() {
+      if (this.user.role === 'SuperAdmin' || this.user.role === 'User2') {
+        return true;
+      }
+    }
+  }]);
+
+  return Gate;
+}();
+
+
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -56262,6 +56616,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_progressbar__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_progressbar__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _Gate__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Gate */ "./resources/js/Gate.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -56296,6 +56651,8 @@ Vue.filter('capitalize', function (value) {
   value = value.toString();
   return value.charAt(0).toUpperCase() + value.slice(1);
 });
+
+Vue.prototype.$gate = new _Gate__WEBPACK_IMPORTED_MODULE_4__["default"](window.user);
 var Fire = new Vue();
 window.Fire = Fire;
 /**

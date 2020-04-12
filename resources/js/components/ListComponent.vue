@@ -1,6 +1,11 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
+
+            <div class="col-md-8 text-center mb-3" v-if="$gate.isSuperAdmin()">
+                <button @click="adduser" class="btn btn-success">Add User</button>
+            </div>
+
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">My Lists</div>
@@ -14,14 +19,15 @@
                                         <div class="col-md-10">
                                             <h6 class="font-weight-bold blue mb-0"><i class="fa fa-paperclip"></i> {{list.list_title | capitalize}}</h6>
                                             <span v-if="list.list_notes" class="link mb-4"><i class="fa fa-sticky-note-o"></i> Notes: {{list.list_notes}}</span>
-                                            <h6 class="added-by mt-1"><i class="fa fa-user-o"></i> Added by : {{list.user.name}}</h6>
+                                            
+                                            <h6 class="added-by mt-2"><i class="fa fa-user-o"></i> Added by : {{list.user.name}}</h6>
                                         </div>
 
-                                        <div class="col-md-2 align-middle-custom" v-if="list.user.id === auth">
-                                            <a class="pointer" @click="editList(list)">
+                                        <div class="col-md-2 align-middle-custom">
+                                            <a class="pointer" @click="editList(list)" v-if="$gate.isSuperAdminOrUser2()">
                                                 <h5><i class="fa fa-pencil pr-3 indigo"></i></h5>
                                             </a>
-                                            <a class="pointer" @click="deleteList(list.id)">
+                                            <a class="pointer" @click="deleteList(list.id)" v-if="$gate.isSuperAdmin()">
                                                 <h5><i class="fa fa-trash red"></i></h5>
                                             </a>
                                         </div>
@@ -52,6 +58,50 @@
             </div>
         </div>
 
+        <!-- Add User Modal -->
+        <sweet-modal ref="userModal" overlay-theme="dark">
+            <template slot="title">
+                    <h4 class="mt-4">Add User</h4>
+                </template>
+            <form @submit.prevent="saveUser()">
+                <div class="form-group">
+                <label>Name</label>
+                <input v-model="userForm.name" type="text" name="name" required
+                    class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
+                <has-error :form="userForm" field="name"></has-error>
+                </div>
+
+                <div class="form-group">
+                <label>Email</label>
+                <input v-model="userForm.email" type="email" name="email" required
+                    class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
+                <has-error :form="userForm" field="email"></has-error>
+                </div>
+
+                <div class="form-group">
+                <label>Role</label>
+                <select v-model="userForm.role" class="form-control" id="role" required=""
+                    name="role" :class="{ 'is-invalid': form.errors.has('role') }">
+                    <option selected disabled>Choose...</option>
+                    <option value="SuperAdmin">SuperAdmin</option>
+                    <option value="User1">User 1</option>
+                    <option value="User2">User 2</option>
+                </select>
+                <has-error :form="userForm" field="role"></has-error>
+                </div>
+
+                <div class="form-group">
+                <label>Password</label>
+                <input v-model="userForm.password" type="password" name="password" required
+                    class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
+                <has-error :form="userForm" field="password"></has-error>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save User</button>
+            </form>
+        </sweet-modal>
+
+        <!-- Add List Modal -->
         <sweet-modal ref="listModal" overlay-theme="dark">
             <template slot="title">
                     <h4 class="mt-4" v-if="!editmode">Add To-Do List</h4>
@@ -100,6 +150,12 @@
                     list_title: '',
                     list_notes: ''
                 }),
+                userForm: new Form({
+                    name: '',
+                    email: '',
+                    role: '',
+                    password: '',
+                }),
                 editmode: false
             }
         },
@@ -111,6 +167,39 @@
                     })
                     .catch(() => {
 
+                    })
+            },
+            adduser() {
+                this.userForm.reset()
+                this.$refs.userModal.open()
+                this.userForm.clear()
+            },
+            saveUser() {
+                this.$Progress.start()
+                this.userForm.post('/api/save-user')
+                    .then(response => {
+
+                        Toast.fire({
+                            type: 'success',
+                            title: 'User added!'
+                        })
+
+                         this.$Progress.finish()
+
+                        // Close Modal
+                        this.$refs.userModal.close()
+
+                        // Reset Form
+                        this.userForm.reset()
+
+                    })
+                    .catch(() => {
+                        Toast.fire({
+                            type: 'error',
+                            title: 'Ooops! Try again'
+                        })
+
+                        this.$Progress.fail()
                     })
             },
             getLists() {
