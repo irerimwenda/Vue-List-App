@@ -1,6 +1,8 @@
 ## Vue-Laravel List App
 The list application is a small web app to manage lists created by different users. Made with [Vue.js](https://vuejs.org/) and [Laravel](https://laravel.com/)
 
+![List App](https://github.com/irerimwenda/Vue-List-App/raw/master/public/img/list-app.png)
+
 ## Installation
 - Setup your database in the .env file and also generate application key
 - Composer Install 
