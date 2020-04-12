@@ -69,13 +69,13 @@ class ListsController extends Controller
         $user = auth('api')->user();
         $list = Lists::findOrFail($id);
 
-        //Validate
+        // Validate
         $this->validate($request, [
             'list_title' => 'required',
             'list_notes' => 'sometimes',
         ]);
 
-        //return response()->json($request->all());
+        // Update List
         $updated = $list->update([
             'list_title' => $request->list_title,
             'list_notes' => $request->list_notes,

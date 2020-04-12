@@ -12,6 +12,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+    <!-- Pass authenticated user token to all views -->
     @auth
     <script>
         window.user = @json(auth()->user()) 
@@ -29,6 +30,7 @@
 <body>
     <div id="app">
 
+        <!-- Vue progress-bar plugin in all views -->
         <vue-progress-bar></vue-progress-bar>
 
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">

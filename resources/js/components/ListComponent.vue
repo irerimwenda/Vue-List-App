@@ -2,6 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
 
+            <!-- Show Add User Btn if User is SuperAdmin -->
             <div class="col-md-8 text-center mb-3" v-if="$gate.isSuperAdmin()">
                 <button @click="adduser" class="btn btn-success">Add User</button>
             </div>
@@ -66,22 +67,22 @@
             <form @submit.prevent="saveUser()">
                 <div class="form-group">
                 <label>Name</label>
-                <input v-model="userForm.name" type="text" name="name" required
-                    class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
+                <input v-model="userForm.name" type="text" name="name"
+                    class="form-control" :class="{ 'is-invalid': userForm.errors.has('name') }">
                 <has-error :form="userForm" field="name"></has-error>
                 </div>
 
                 <div class="form-group">
                 <label>Email</label>
-                <input v-model="userForm.email" type="email" name="email" required
-                    class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
+                <input v-model="userForm.email" type="email" name="email"
+                    class="form-control" :class="{ 'is-invalid': userForm.errors.has('email') }">
                 <has-error :form="userForm" field="email"></has-error>
                 </div>
 
                 <div class="form-group">
                 <label>Role</label>
-                <select v-model="userForm.role" class="form-control" id="role" required=""
-                    name="role" :class="{ 'is-invalid': form.errors.has('role') }">
+                <select v-model="userForm.role" class="form-control" id="role"
+                    name="role" :class="{ 'is-invalid': userForm.errors.has('role') }">
                     <option selected disabled>Choose...</option>
                     <option value="SuperAdmin">SuperAdmin</option>
                     <option value="User1">User 1</option>
@@ -92,14 +93,15 @@
 
                 <div class="form-group">
                 <label>Password</label>
-                <input v-model="userForm.password" type="password" name="password" required
-                    class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
+                <input v-model="userForm.password" type="password" name="password"
+                    class="form-control" :class="{ 'is-invalid': userForm.errors.has('password') }">
                 <has-error :form="userForm" field="password"></has-error>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Save User</button>
             </form>
         </sweet-modal>
+
 
         <!-- Add List Modal -->
         <sweet-modal ref="listModal" overlay-theme="dark">
@@ -166,9 +168,10 @@
                         this.user = response.data
                     })
                     .catch(() => {
-
+                        console.log('Error fetching authenticated user')
                     })
             },
+
             adduser() {
                 this.userForm.reset()
                 this.$refs.userModal.open()
@@ -180,7 +183,7 @@
                     .then(response => {
 
                         Toast.fire({
-                            type: 'success',
+                            icon: 'success',
                             title: 'User added!'
                         })
 
@@ -195,13 +198,14 @@
                     })
                     .catch(() => {
                         Toast.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: 'Ooops! Try again'
                         })
 
                         this.$Progress.fail()
                     })
             },
+            
             getLists() {
                 axios.get('/api/all-lists')
                     .then(response => {
@@ -223,7 +227,7 @@
                     .then(response => {
 
                         Toast.fire({
-                            type: 'success',
+                            icon: 'success',
                             title: 'List added!'
                         })
 
@@ -241,7 +245,7 @@
                     })
                     .catch(() => {
                         Toast.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: 'Ooops! Try again'
                         })
 
@@ -263,14 +267,14 @@
                             Fire.$emit('refreshListAdded');
                             this.$Progress.finish()
                             Toast.fire({
-                                type: 'success',
+                                icon: 'success',
                                 title: 'List updated!'
                             })
                         })
                     .catch(error => {
                         this.form.reset()
                         Toast.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: 'Ooops! Try again'
                         })
                         this.$Progress.fail()
@@ -280,7 +284,7 @@
                 this.form.delete('/api/delete-list/' + id)
                 .then(response => {
                     Toast.fire({
-                        type: 'success',
+                        icon: 'success',
                         title: 'List deleted!'
                     })
                     Fire.$emit('refreshListAdded');

@@ -2041,6 +2041,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['auth'],
   mounted: function mounted() {
@@ -2076,7 +2078,9 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.get('/api/user').then(function (response) {
         _this2.user = response.data;
-      })["catch"](function () {});
+      })["catch"](function () {
+        console.log('Error fetching authenticated user');
+      });
     },
     adduser: function adduser() {
       this.userForm.reset();
@@ -2089,7 +2093,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$Progress.start();
       this.userForm.post('/api/save-user').then(function (response) {
         Toast.fire({
-          type: 'success',
+          icon: 'success',
           title: 'User added!'
         });
 
@@ -2102,7 +2106,7 @@ __webpack_require__.r(__webpack_exports__);
         _this3.userForm.reset();
       })["catch"](function () {
         Toast.fire({
-          type: 'error',
+          icon: 'error',
           title: 'Ooops! Try again'
         });
 
@@ -2128,7 +2132,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$Progress.start();
       this.form.post('/api/save-list').then(function (response) {
         Toast.fire({
-          type: 'success',
+          icon: 'success',
           title: 'List added!'
         }); // Fire refresh event
 
@@ -2143,7 +2147,7 @@ __webpack_require__.r(__webpack_exports__);
         _this5.form.reset();
       })["catch"](function () {
         Toast.fire({
-          type: 'error',
+          icon: 'error',
           title: 'Ooops! Try again'
         });
 
@@ -2170,14 +2174,14 @@ __webpack_require__.r(__webpack_exports__);
         _this6.$Progress.finish();
 
         Toast.fire({
-          type: 'success',
+          icon: 'success',
           title: 'List updated!'
         });
       })["catch"](function (error) {
         _this6.form.reset();
 
         Toast.fire({
-          type: 'error',
+          icon: 'error',
           title: 'Ooops! Try again'
         });
 
@@ -2187,7 +2191,7 @@ __webpack_require__.r(__webpack_exports__);
     deleteList: function deleteList(id) {
       this.form["delete"]('/api/delete-list/' + id).then(function (response) {
         Toast.fire({
-          type: 'success',
+          icon: 'success',
           title: 'List deleted!'
         });
         Fire.$emit('refreshListAdded');
@@ -44049,8 +44053,8 @@ var render = function() {
                       }
                     ],
                     staticClass: "form-control",
-                    class: { "is-invalid": _vm.form.errors.has("name") },
-                    attrs: { type: "text", name: "name", required: "" },
+                    class: { "is-invalid": _vm.userForm.errors.has("name") },
+                    attrs: { type: "text", name: "name" },
                     domProps: { value: _vm.userForm.name },
                     on: {
                       input: function($event) {
@@ -44085,8 +44089,8 @@ var render = function() {
                       }
                     ],
                     staticClass: "form-control",
-                    class: { "is-invalid": _vm.form.errors.has("email") },
-                    attrs: { type: "email", name: "email", required: "" },
+                    class: { "is-invalid": _vm.userForm.errors.has("email") },
+                    attrs: { type: "email", name: "email" },
                     domProps: { value: _vm.userForm.email },
                     on: {
                       input: function($event) {
@@ -44123,8 +44127,8 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control",
-                      class: { "is-invalid": _vm.form.errors.has("role") },
-                      attrs: { id: "role", required: "", name: "role" },
+                      class: { "is-invalid": _vm.userForm.errors.has("role") },
+                      attrs: { id: "role", name: "role" },
                       on: {
                         change: function($event) {
                           var $$selectedVal = Array.prototype.filter
@@ -44187,8 +44191,10 @@ var render = function() {
                       }
                     ],
                     staticClass: "form-control",
-                    class: { "is-invalid": _vm.form.errors.has("password") },
-                    attrs: { type: "password", name: "password", required: "" },
+                    class: {
+                      "is-invalid": _vm.userForm.errors.has("password")
+                    },
+                    attrs: { type: "password", name: "password" },
                     domProps: { value: _vm.userForm.password },
                     on: {
                       input: function($event) {

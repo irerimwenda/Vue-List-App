@@ -18,8 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Save User Route
 Route::post('save-user', 'API\ListsController@createUser');
 
+// List CRUD Routes
 Route::get('all-lists', 'API\ListsController@getLists');
 Route::post('save-list', 'API\ListsController@saveList');
 Route::put('update-list/{id}', 'API\ListsController@updateList');
