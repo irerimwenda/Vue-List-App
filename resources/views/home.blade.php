@@ -2,6 +2,8 @@
 
 @section('content')
 <div class="container">
-    <list-component></list-component>
+    <list-component
+        :auth="{{$auth}}">
+    </list-component>
 </div>
 @endsection

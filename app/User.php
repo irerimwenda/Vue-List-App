@@ -39,6 +39,6 @@ class User extends Authenticatable
     ];
 
     public function list() {
-        return $this->hasMany('App/Lists', 'added_by');
+        return $this->hasOne('App\Lists', 'added_by');
     }
 }

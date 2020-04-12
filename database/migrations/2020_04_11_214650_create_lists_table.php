@@ -16,7 +16,7 @@ class CreateListsTable extends Migration
         Schema::create('lists', function (Blueprint $table) {
             $table->id();
             $table->string('list_title');
-            $table->text('list_notes');
+            $table->text('list_notes')->nullable();
             $table->integer('added_by');
             $table->timestamps();
         });

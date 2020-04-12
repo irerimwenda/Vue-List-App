@@ -18,4 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('all-lists', 'API/ListsController@getLists');
+Route::get('all-lists', 'API\ListsController@getLists');
+Route::post('save-list', 'API\ListsController@saveList');

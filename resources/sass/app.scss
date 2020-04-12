@@ -11,3 +11,14 @@
 .margin-bottom {
     margin-bottom: 20px !important;
 }
+
+.align-middle-custom {
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pointer {
+    cursor: pointer;
+}

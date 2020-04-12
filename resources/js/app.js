@@ -8,6 +8,41 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+import SweetModal from 'sweet-modal-vue/src/plugin.js'
+Vue.use(SweetModal)
+
+import { Form, HasError, AlertError } from 'vform'
+window.Form = Form;
+Vue.component(HasError.name, HasError)
+Vue.component(AlertError.name, AlertError)
+
+import VueProgressBar from 'vue-progressbar'
+Vue.use(VueProgressBar, {
+  color: 'rgb(143, 255, 199)',
+  failedColor: 'red',
+  height: '2px'
+})
+
+import Swal from 'sweetalert2'
+window.Swal = Swal;
+
+let Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000
+})
+window.Toast = Toast;
+
+Vue.filter('capitalize', function (value) {
+    if (!value) return ''
+    value = value.toString()
+    return value.charAt(0).toUpperCase() + value.slice(1)
+})
+
+let Fire = new Vue();
+window.Fire = Fire;
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
